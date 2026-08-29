@@ -282,16 +282,20 @@ footer {
 
 @media(max-width:600px){
 
-h1{
-    font-size:20px;
-}
+    h1{
+        font-size:20px;
+    }
 
-#card-list{
+    #card-list{
+        grid-template-columns: repeat(3,1fr);
+    }
 
-    grid-template-columns:
-    repeat(3,1fr);
-
-}
+    .card h3{
+        font-size:11px;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:clip;
+    }
 
 }
 
