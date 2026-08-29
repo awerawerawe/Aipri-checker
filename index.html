@@ -297,12 +297,13 @@ footer {
         text-overflow:clip;
     }
 
-   .card-name{
+.card-name{
     font-size:11px;
     line-height:14px;
     height:28px;
-    white-space:normal;
+    white-space:normal !important;
     overflow:hidden;
+    text-overflow:clip;
     display:-webkit-box;
     -webkit-box-orient:vertical;
     -webkit-line-clamp:2;
@@ -401,8 +402,10 @@ footer {
     line-height: 18px;
     margin: 4px 0;
 
+    white-space: normal !important;
     overflow: hidden;
-    white-space: normal;
+    text-overflow: clip;
+
     overflow-wrap: break-word;
     word-break: break-all;
 
