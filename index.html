@@ -364,6 +364,13 @@ footer {
         transform: translateX(var(--scroll-distance));
     }
 }
+
+/* カード名を1行表示 */
+.card p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
     
 </style>
 
@@ -1363,10 +1370,11 @@ div.innerHTML=
 
 `
 
+div.innerHTML=
+`
 <img src="${card.image}"
 onerror="this.alt='画像準備中';"
 onclick="openImage('${card.image}')">
-
 
 <h3>${card.id}</h3>
 
@@ -1374,10 +1382,7 @@ onclick="openImage('${card.image}')">
 
 <p>${card.character}</p>
 
-<div class="card-name">
-    <span>${card.name}</span>
-</div>
-
+<p>${card.name}</p>
 
 <div class="favorite"
 onclick="toggleFavorite('${card.id}')">
@@ -1386,49 +1391,14 @@ ${fav ? "❤️":"♡"}
 
 </div>
 
-
 <button onclick="toggleOwned('${card.id}')">
-
 ${owned ? 
 "☑ 所持中":
 "□ 未所持"}
-
 </button>
-
-
 `;
 
-
-
 area.appendChild(div);
-
-requestAnimationFrame(() => {
-
-    const nameBox =
-        div.querySelector(".card-name");
-
-    const nameText =
-        nameBox.querySelector("span");
-
-    if (
-        nameText.scrollWidth >
-        nameBox.clientWidth
-    ) {
-
-        const distance =
-            nameText.scrollWidth -
-            nameBox.clientWidth;
-
-        nameBox.style.setProperty(
-            "--scroll-distance",
-            `-${distance}px`
-        );
-
-        nameBox.classList.add("scroll");
-
-    }
-
-});
 
 
 
