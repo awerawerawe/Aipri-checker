@@ -282,18 +282,17 @@ footer {
 
 @media(max-width:600px){
 
-    h1{
-        font-size:20px;
-    }
+h1{
+    font-size:20px;
+}
 
-    #card-list{
-        grid-template-columns: repeat(3,1fr);
-        gap:5px;
-    }
 
-    .card-name{
-        font-size:12px;
-    }
+#card-list{
+
+    grid-template-columns:
+    repeat(2,1fr);
+
+}
 
 }
 
@@ -330,48 +329,6 @@ footer {
   color:#ff9900;
   font-size:18px;
 }
-
-/* カード名 */
-.card-name {
-    width: 100%;
-    overflow: hidden;
-    white-space: nowrap;
-    box-sizing: border-box;
-    margin: 6px 0;
-    font-size: 14px;
-}
-
-.card-name span {
-    display: inline-block;
-    white-space: nowrap;
-}
-
-/* 長いカード名だけスクロール */
-.card-name.scroll span {
-    animation: card-name-scroll 5s linear infinite alternate;
-}
-
-@keyframes card-name-scroll {
-    0% {
-        transform: translateX(0);
-    }
-
-    40% {
-        transform: translateX(0);
-    }
-
-    100% {
-        transform: translateX(var(--scroll-distance));
-    }
-}
-
-/* カード名を1行表示 */
-.card p {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-    
 </style>
 
 </head>
@@ -452,14 +409,17 @@ footer {
 
 <section class="box">
 
-<details class="rate-section"> <summary>📊 シリーズ別所持率 <span>▼</span></summary>
+<h2>
+📊 シリーズ別所持率
+</h2>
 
-<div id="series-rate"> </div> </details>
+<div id="series-rate">
+</div>
+<h2>
+👤 キャラクター別所持率
+</h2>
 
-<details class="rate-section"> <summary>👤 キャラクター別所持率 <span>▼</span></summary>
-
-<div id="character-rate"> </div> </details>
-
+<div id="character-rate"></div>
 <h2>
 🔍 検索・絞り込み
 </h2>
@@ -1366,13 +1326,14 @@ favoriteData[card.id];
 
 
 
-
-
 div.innerHTML=
+
 `
+
 <img src="${card.image}"
 onerror="this.alt='画像準備中';"
 onclick="openImage('${card.image}')">
+
 
 <h3>${card.id}</h3>
 
@@ -1382,6 +1343,7 @@ onclick="openImage('${card.image}')">
 
 <p>${card.name}</p>
 
+
 <div class="favorite"
 onclick="toggleFavorite('${card.id}')">
 
@@ -1389,21 +1351,33 @@ ${fav ? "❤️":"♡"}
 
 </div>
 
+
 <button onclick="toggleOwned('${card.id}')">
+
 ${owned ? 
 "☑ 所持中":
 "□ 未所持"}
+
 </button>
+
+
 `;
 
+
+
 area.appendChild(div);
+
+
+
+});
+
 
 
 updateRate();
 
 
-});
-    
+}
+
 // =========================
 // シリーズ別所持率
 // =========================
