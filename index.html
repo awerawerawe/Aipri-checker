@@ -282,16 +282,18 @@ footer {
 
 @media(max-width:600px){
 
-h1{
-    font-size:20px;
-}
+    h1{
+        font-size:20px;
+    }
 
-#card-list{
+    #card-list{
+        grid-template-columns: repeat(3,1fr);
+        gap:5px;
+    }
 
-    grid-template-columns:
-    repeat(3,1fr);
-
-}
+    .card-name{
+        font-size:12px;
+    }
 
 }
 
@@ -328,6 +330,41 @@ h1{
   color:#ff9900;
   font-size:18px;
 }
+
+/* カード名 */
+.card-name {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    box-sizing: border-box;
+    margin: 6px 0;
+    font-size: 14px;
+}
+
+.card-name span {
+    display: inline-block;
+    white-space: nowrap;
+}
+
+/* 長いカード名だけスクロール */
+.card-name.scroll span {
+    animation: card-name-scroll 5s linear infinite alternate;
+}
+
+@keyframes card-name-scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    40% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(var(--scroll-distance));
+    }
+}
+    
 </style>
 
 </head>
@@ -1337,7 +1374,9 @@ onclick="openImage('${card.image}')">
 
 <p>${card.character}</p>
 
-<p>${card.name}</p>
+<div class="card-name">
+    <span>${card.name}</span>
+</div>
 
 
 <div class="favorite"
@@ -1363,7 +1402,31 @@ ${owned ?
 
 area.appendChild(div);
 
+requestAnimationFrame(() => {
 
+    const nameBox =
+        div.querySelector(".card-name");
+
+    const nameText =
+        nameBox.querySelector("span");
+
+    if (
+        nameText.scrollWidth >
+        nameBox.clientWidth
+    ) {
+
+        const distance =
+            nameText.scrollWidth -
+            nameBox.clientWidth;
+
+        nameBox.style.setProperty(
+            "--scroll-distance",
+            `-${distance}px`
+        );
+
+        nameBox.classList.add("scroll");
+
+    }
 
 });
 
