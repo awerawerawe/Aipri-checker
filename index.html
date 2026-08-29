@@ -237,17 +237,23 @@ button {
 
 
 .card button {
-
-
     width:90%;
-
-    background:#ff8fd8;
-
-    color:white;
-
     border:none;
+    border-radius:8px;
+    padding:6px;
+    font-weight:bold;
+}
 
+/* 未所持 */
+.card button.not-owned {
+    background:#fce4ec;
+    color:#c2185b;
+}
 
+/* 所持中 */
+.card button.owned {
+    background:#ec407a;
+    color:white;
 }
 
 
@@ -1448,7 +1454,8 @@ ${fav ? "❤️":"♡"}
 </div>
 
 
-<button onclick="toggleOwned('${card.id}')">
+<button class="${owned ? 'owned' : 'not-owned'}"
+onclick="toggleOwned('${card.id}')">
 
 ${owned ? 
 "☑ 所持中":
