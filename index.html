@@ -1904,7 +1904,8 @@ characterBox.addEventListener("change", e => {
 }
 // =========================
 // 所持・未所持・お気に入り・サプライズ・ミラクル
-// 複数選択フィルター
+// 所持／未所持はどちらか一方のみ選択
+// サプライズ／ミラクル／お気に入りは状態を保持
 // =========================
 
 document
@@ -1918,6 +1919,17 @@ document
                 'input[name="view"][value="all"]'
             );
 
+        const ownedButton =
+            document.querySelector(
+                'input[name="view"][value="owned"]'
+            );
+
+        const missingButton =
+            document.querySelector(
+                'input[name="view"][value="missing"]'
+            );
+
+        // 「全部」
         if(this.value === "all"){
 
             if(this.checked){
@@ -1935,27 +1947,56 @@ document
                 });
 
                 currentView = ["all"];
-
             }
 
+        // 「所持」
+        }else if(this.value === "owned"){
+
+            if(this.checked){
+
+                // 未所持をOFF
+                missingButton.checked = false;
+
+                // 全部をOFF
+                allButton.checked = false;
+            }
+
+        // 「未所持」
+        }else if(this.value === "missing"){
+
+            if(this.checked){
+
+                // 所持をOFF
+                ownedButton.checked = false;
+
+                // 全部をOFF
+                allButton.checked = false;
+            }
+
+        // 「お気に入り・サプライズ・ミラクル」
         }else{
 
+            // 全部をOFF
             allButton.checked = false;
+        }
 
-            currentView =
-                [...document.querySelectorAll(
-                    'input[name="view"]:checked'
-                )]
-                .map(item => item.value);
 
-            if(currentView.length === 0){
+        // 現在ONになっている項目を取得
+        currentView =
+            [...document.querySelectorAll(
+                'input[name="view"]:checked'
+            )]
+            .map(item => item.value);
 
-                allButton.checked = true;
-                currentView = ["all"];
 
-            }
+        // 何も選択されていない場合
+        if(currentView.length === 0){
+
+            allButton.checked = true;
+            currentView = ["all"];
 
         }
+
 
         displayCards();
 
