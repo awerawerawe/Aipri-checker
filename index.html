@@ -185,7 +185,7 @@ button {
     box-sizing: border-box;
 }
 
-.radio-area label input[type="radio"] {
+.radio-area label input[type="checkbox"] {
     width:auto;
     padding:0;
     margin:0 0 4px 0;
@@ -629,35 +629,36 @@ placeholder="カードNo・カード名・キャラクター検索">
 <div class="radio-area">
 
     <label>
-        <input type="radio" name="view" value="all" checked>
+        <input type="checkbox" name="view" value="all" checked>
         全部
     </label>
 
     <label>
-        <input type="radio" name="view" value="owned">
+        <input type="checkbox" name="view" value="owned">
         所持
     </label>
 
     <label>
-        <input type="radio" name="view" value="missing">
+        <input type="checkbox" name="view" value="missing">
         未所持
     </label>
 
     <label>
-        <input type="radio" name="view" value="favorite">
+        <input type="checkbox" name="view" value="favorite">
         お気に入り
     </label>
 
     <label>
-        <input type="radio" name="view" value="surprise">
+        <input type="checkbox" name="view" value="surprise">
         サプライズ
     </label>
 
     <label>
-        <input type="radio" name="view" value="miracle">
+        <input type="checkbox" name="view" value="miracle">
         ミラクル
     </label>
 
+</div>
 
 
 
@@ -734,7 +735,7 @@ localStorage.getItem("ipri_favorite")
 // 表示設定
 // =========================
 
-let currentView = "all";
+let currentView = ["all"];
 
 let searchText = "";
 
@@ -1305,20 +1306,26 @@ if(waveFilter !== "all"){
 }
 
 // ミラクル
-if(miracleFilter === "M"){
+if(
+    miracleFilter === "M" ||
+    currentView.includes("miracle")
+){
 
-  list = list.filter(card =>
-    card.miracle === "M"
-  );
+    list = list.filter(card =>
+        card.miracle === "M"
+    );
 
 }
 
 // サプライズ
-if(surpriseFilter === "S"){
+if(
+    surpriseFilter === "S" ||
+    currentView.includes("surprise")
+){
 
-  list = list.filter(card =>
-    card.id.endsWith("P")
-  );
+    list = list.filter(card =>
+        card.id.endsWith("P")
+    );
 
 }
 // キャラクター
@@ -1336,41 +1343,27 @@ if(characterFilter !== "all"){
 
 }
     
-if(currentView==="owned"){
+if(currentView.includes("owned")){
 
-
-list=list.filter(card=>
-
-saveData[card.id]
-
-);
-
+    list = list.filter(card =>
+        saveData[card.id]
+    );
 
 }
 
+if(currentView.includes("missing")){
 
-if(currentView==="missing"){
-
-
-list=list.filter(card=>
-
-!saveData[card.id]
-
-);
-
+    list = list.filter(card =>
+        !saveData[card.id]
+    );
 
 }
 
+if(currentView.includes("favorite")){
 
-if(currentView==="favorite"){
-
-
-list=list.filter(card=>
-
-favoriteData[card.id]
-
-);
-
+    list = list.filter(card =>
+        favoriteData[card.id]
+    );
 
 }
 
@@ -1959,7 +1952,66 @@ characterBox.addEventListener("change", e => {
 });
 
 }
+// =========================
+// 所持・未所持・お気に入り・サプライズ・ミラクル
+// 複数選択フィルター
+// =========================
 
+document
+.querySelectorAll('input[name="view"]')
+.forEach(input => {
+
+    input.addEventListener("change", function(){
+
+        const allButton =
+            document.querySelector(
+                'input[name="view"][value="all"]'
+            );
+
+        if(this.value === "all"){
+
+            if(this.checked){
+
+                document
+                .querySelectorAll(
+                    'input[name="view"]'
+                )
+                .forEach(item => {
+
+                    if(item.value !== "all"){
+                        item.checked = false;
+                    }
+
+                });
+
+                currentView = ["all"];
+
+            }
+
+        }else{
+
+            allButton.checked = false;
+
+            currentView =
+                [...document.querySelectorAll(
+                    'input[name="view"]:checked'
+                )]
+                .map(item => item.value);
+
+            if(currentView.length === 0){
+
+                allButton.checked = true;
+                currentView = ["all"];
+
+            }
+
+        }
+
+        displayCards();
+
+    });
+
+});
 
 // =========================
 // 画像拡大
