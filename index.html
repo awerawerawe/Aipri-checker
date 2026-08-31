@@ -158,11 +158,11 @@ button {
 
 .radio-area {
 
-    display:flex;
+    display:grid;
 
-    gap:15px;
+    grid-template-columns:repeat(3, 1fr);
 
-    flex-wrap:wrap;
+    gap:8px;
 
 }
 
@@ -172,12 +172,19 @@ button {
 
     background:#ffe6f5;
 
-    padding:8px 12px;
+    padding:10px 5px;
 
-    border-radius:20px;
+    border-radius:10px;
+
+    text-align:center;
+
+    font-size:13px;
+
+    font-weight:bold;
+
+    box-sizing:border-box;
 
 }
-
 
 
 
@@ -615,37 +622,37 @@ placeholder="カードNo・カード名・キャラクター検索">
 
 <div class="radio-area">
 
+    <label>
+        <input type="radio" name="view" value="all" checked>
+        全部
+    </label>
 
-<label>
-<input type="radio" name="view" value="all" checked>
+    <label>
+        <input type="radio" name="view" value="owned">
+        所持
+    </label>
 
-全部
-</label>
+    <label>
+        <input type="radio" name="view" value="missing">
+        未所持
+    </label>
 
+    <label>
+        <input type="radio" name="view" value="favorite">
+        お気に入り
+    </label>
 
-<label>
-<input type="radio" name="view" value="owned">
+    <label>
+        <input type="radio" name="view" value="surprise">
+        サプライズ
+    </label>
 
-所持のみ
-</label>
-
-
-<label>
-<input type="radio" name="view" value="missing">
-
-未所持のみ
-</label>
-
-
-
-<label>
-<input type="radio" name="view" value="favorite">
-
-お気に入り
-</label>
+    <label>
+        <input type="radio" name="view" value="miracle">
+        ミラクル
+    </label>
 
 
-</div>
 
 
 
