@@ -1504,15 +1504,28 @@ function updateSeriesRate(){
 
   area.innerHTML = "";
 
-  let seriesList =
-  [...new Set(
-    cards.map(card =>
-      card.series
-    )
-  )];
+ let seriesList =
+[...new Set(
+  cards.map(card =>
+    card.series
+  )
+)];
 
-  seriesList.forEach(series => {
 
+// シリーズ表示順
+const seriesOrder = [
+  "ひみつ",
+  "リング編",
+  "おねがい",
+  "グミ"
+];
+
+seriesList.sort((a, b) => {
+  return seriesOrder.indexOf(a) - seriesOrder.indexOf(b);
+});
+
+
+seriesList.forEach(series => {
     let total =
     cards.filter(card =>
       card.series === series
@@ -1535,7 +1548,7 @@ area.innerHTML +=
 `
 <div class="series-stat">
 
-  <b>${series}</b><br>
+ <b>${series === "グミ" ? "カードグミ" : series}</b><br>
 
   <div class="progress-bar">
 
