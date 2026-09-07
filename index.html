@@ -1548,7 +1548,12 @@ area.innerHTML +=
 `
 <div class="series-stat">
 
- <b>${series === "グミ" ? "カードグミ" : series}</b><br>
+<b
+  class="series-rate-name"
+  onclick="selectSeries('${series}')"
+>
+  ${series === "グミ" ? "カードグミ" : series}
+</b><br>
 
   <div class="progress-bar">
 
@@ -1703,6 +1708,55 @@ function selectCharacter(character){
 
 }
 
+// =========================
+// シリーズ選択
+// =========================
+
+function selectSeries(series){
+
+  // シリーズを選択
+  seriesFilter = series;
+
+  document.getElementById("series").value =
+  series;
+
+  // キャラクターを「すべて」に戻す
+  characterFilter = "all";
+
+  document.getElementById("character").value =
+  "all";
+
+  // 表示条件を「全部」に戻す
+  currentView = ["all"];
+
+  // チェックボックスを更新
+  document
+    .querySelectorAll(
+      'input[name="view"]'
+    )
+    .forEach(input => {
+
+      input.checked =
+      input.value === "all";
+
+    });
+
+  // ミラクル・サプライズの条件も解除
+  miracleFilter = "all";
+  surpriseFilter = "all";
+
+  // カード一覧を更新
+  displayCards();
+
+  // カード一覧まで移動
+  document
+    .getElementById("card-list")
+    .scrollIntoView({
+      behavior:"smooth",
+      block:"start"
+    });
+
+}
 
 // =========================
 // 所持状態変更
