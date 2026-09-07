@@ -1601,7 +1601,12 @@ function updateCharacterRate(){
     `
     <div class="series-stat">
 
-      <b>${character}</b><br>
+      <b
+        class="character-rate-name"
+        onclick="selectCharacter('${character}')"
+      >
+        ${character}
+      </b><br>
 
       <div class="progress-bar">
 
@@ -1610,17 +1615,16 @@ function updateCharacterRate(){
           style="width:${rate}%"
         >
           ${rate}%
+          ${
+            rate === 100
+            ? " 🏆 COMPLETE 🏆"
+            : ""
+          }
         </div>
 
-  </div>
+      </div>
 
       ${owned} / ${total}枚
-
-      ${
-        rate === 100
-        ? " 🏆 COMPLETE 🏆"
-        : ""
-      }
 
     </div>
     `;
