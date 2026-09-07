@@ -1612,9 +1612,15 @@ function updateCharacterRate(){
           ${rate}%
         </div>
 
-      </div>
+  </div>
 
       ${owned} / ${total}枚
+
+      ${
+        rate === 100
+        ? " 🏆 COMPLETE 🏆"
+        : ""
+      }
 
     </div>
     `;
