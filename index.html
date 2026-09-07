@@ -1631,7 +1631,58 @@ function updateCharacterRate(){
   });
 
 }
-    
+
+
+// =========================
+// キャラクター選択
+// =========================
+
+function selectCharacter(character){
+
+  // キャラクターを選択
+  characterFilter = character;
+
+  document.getElementById("character").value =
+  character;
+
+
+  // 表示条件を「全部」に戻す
+  currentView = ["all"];
+
+
+  // チェックボックスを更新
+  document
+    .querySelectorAll(
+      'input[name="view"]'
+    )
+    .forEach(input => {
+
+      input.checked =
+      input.value === "all";
+
+    });
+
+
+  // ミラクル・サプライズの条件も解除
+  miracleFilter = "all";
+  surpriseFilter = "all";
+
+
+  // カード一覧を更新
+  displayCards();
+
+
+  // カード一覧まで移動
+  document
+    .getElementById("card-list")
+    .scrollIntoView({
+      behavior:"smooth",
+      block:"start"
+    });
+
+}
+
+
 // =========================
 // 所持状態変更
 // =========================
