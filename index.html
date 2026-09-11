@@ -1111,6 +1111,210 @@ placeholder="カードNo・カード名">
 
 </footer>
 
+<!-- =========================
+     セーブコード画面
+========================= -->
+
+<div id="save-code-page" class="save-code-page">
+
+    <div class="save-code-inner">
+
+        <!-- 一覧画面 -->
+
+        <div id="save-code-list-screen">
+
+            <div class="save-code-header">
+
+                <button
+                id="close-save-code"
+                class="save-code-back">
+                    ← 戻る
+                </button>
+
+                <h2 class="save-code-title">
+                    🎮 マイキャラのセーブコード
+                </h2>
+
+            </div>
+
+
+            <div
+            id="mychar-list"
+            class="mychar-list">
+            </div>
+
+
+            <button
+            id="add-mychar"
+            class="new-mychar-button">
+
+                ＋ 新規追加
+
+            </button>
+
+        </div>
+
+
+
+        <!-- 登録・編集画面 -->
+
+        <div
+        id="save-code-form-screen"
+        style="display:none;">
+
+            <div class="save-code-header">
+
+                <button
+                id="back-to-mychar-list"
+                class="save-code-back">
+
+                    ← 戻る
+
+                </button>
+
+                <h2
+                id="save-form-title"
+                class="save-code-title">
+
+                    🎮 マイキャラを追加
+
+                </h2>
+
+            </div>
+
+
+            <div class="save-form">
+
+
+                <label>
+                    マイキャラ名
+                </label>
+
+                <input
+                type="text"
+                id="mychar-name"
+                placeholder="マイキャラ名を入力">
+
+
+                <label>
+                    セーブコードID（15桁）
+                </label>
+
+                <input
+                type="text"
+                id="mychar-save-id"
+                inputmode="numeric"
+                maxlength="15"
+                placeholder="15桁の数字を入力">
+
+
+                <label>
+                    セーブコードQR画像
+                </label>
+
+                <input
+                type="file"
+                id="mychar-qr-file"
+                accept="image/*">
+
+
+                <img
+                id="qr-preview"
+                class="qr-preview">
+
+
+                <button
+                id="save-mychar"
+                class="save-register-button">
+
+                    登録する
+
+                </button>
+
+
+            </div>
+
+        </div>
+
+
+
+        <!-- 詳細画面 -->
+
+        <div
+        id="save-code-detail-screen"
+        style="display:none;">
+
+            <div class="save-code-header">
+
+                <button
+                id="back-from-detail"
+                class="save-code-back">
+
+                    ← 一覧
+
+                </button>
+
+                <h2 class="save-code-title">
+                    🎮 セーブコード
+                </h2>
+
+            </div>
+
+
+            <div class="mychar-detail">
+
+
+                <h2
+                id="detail-mychar-name"
+                class="mychar-detail-name">
+                </h2>
+
+
+                <img
+                id="detail-qr-image"
+                class="mychar-qr">
+
+
+                <div class="save-id-label">
+                    セーブコードID
+                </div>
+
+
+                <div id="detail-save-id"
+                class="save-id">
+                </div>
+
+
+                <div class="mychar-actions">
+
+                    <button
+                    id="edit-mychar"
+                    class="edit-mychar-button">
+
+                        ✏️ 編集
+
+                    </button>
+
+
+                    <button
+                    id="delete-mychar"
+                    class="delete-mychar-button">
+
+                        🗑️ 削除
+
+                    </button>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+    
 <script>
 
 
