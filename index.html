@@ -2789,6 +2789,976 @@ window.open(src);
 }
 
 
+// =========================
+// マイキャラ セーブコード
+// =========================
+
+const SAVE_CODE_DB_NAME =
+"ipri_save_code_db";
+
+const SAVE_CODE_STORE =
+"mychars";
+
+const MAX_MYCHAR = 4;
+
+
+let saveCodeDB;
+
+let selectedMycharId = null;
+
+let editingMycharId = null;
+
+let selectedQRFile = null;
+
+let currentPreviewURL = null;
+
+
+
+// =========================
+// IndexedDBを開く
+// =========================
+
+function openSaveCodeDB(){
+
+    return new Promise((resolve, reject) => {
+
+        const request =
+        indexedDB.open(
+            SAVE_CODE_DB_NAME,
+            1
+        );
+
+
+        request.onupgradeneeded = e => {
+
+            const db =
+            e.target.result;
+
+
+            if(
+                !db.objectStoreNames.contains(
+                    SAVE_CODE_STORE
+                )
+            ){
+
+                db.createObjectStore(
+                    SAVE_CODE_STORE,
+                    {
+                        keyPath:"id"
+                    }
+                );
+
+            }
+
+        };
+
+
+        request.onsuccess = e => {
+
+            saveCodeDB =
+            e.target.result;
+
+            resolve();
+
+        };
+
+
+        request.onerror = () => {
+
+            reject(
+                request.error
+            );
+
+        };
+
+    });
+
+}
+
+
+
+// =========================
+// 全キャラ取得
+// =========================
+
+function getMychars(){
+
+    return new Promise((resolve, reject) => {
+
+        const transaction =
+        saveCodeDB.transaction(
+            SAVE_CODE_STORE,
+            "readonly"
+        );
+
+
+        const store =
+        transaction.objectStore(
+            SAVE_CODE_STORE
+        );
+
+
+        const request =
+        store.getAll();
+
+
+        request.onsuccess = () => {
+
+            const data =
+            request.result.sort(
+                (a,b) =>
+                a.createdAt - b.createdAt
+            );
+
+            resolve(data);
+
+        };
+
+
+        request.onerror = () => {
+
+            reject(request.error);
+
+        };
+
+    });
+
+}
+
+
+
+// =========================
+// 1人取得
+// =========================
+
+function getMychar(id){
+
+    return new Promise((resolve, reject) => {
+
+        const transaction =
+        saveCodeDB.transaction(
+            SAVE_CODE_STORE,
+            "readonly"
+        );
+
+
+        const store =
+        transaction.objectStore(
+            SAVE_CODE_STORE
+        );
+
+
+        const request =
+        store.get(id);
+
+
+        request.onsuccess = () => {
+
+            resolve(request.result);
+
+        };
+
+
+        request.onerror = () => {
+
+            reject(request.error);
+
+        };
+
+    });
+
+}
+
+
+
+// =========================
+// 保存
+// =========================
+
+function putMychar(data){
+
+    return new Promise((resolve, reject) => {
+
+        const transaction =
+        saveCodeDB.transaction(
+            SAVE_CODE_STORE,
+            "readwrite"
+        );
+
+
+        const store =
+        transaction.objectStore(
+            SAVE_CODE_STORE
+        );
+
+
+        const request =
+        store.put(data);
+
+
+        request.onsuccess = () => {
+
+            resolve();
+
+        };
+
+
+        request.onerror = () => {
+
+            reject(request.error);
+
+        };
+
+    });
+
+}
+
+
+
+// =========================
+// 削除
+// =========================
+
+function removeMychar(id){
+
+    return new Promise((resolve, reject) => {
+
+        const transaction =
+        saveCodeDB.transaction(
+            SAVE_CODE_STORE,
+            "readwrite"
+        );
+
+
+        const store =
+        transaction.objectStore(
+            SAVE_CODE_STORE
+        );
+
+
+        const request =
+        store.delete(id);
+
+
+        request.onsuccess = () => {
+
+            resolve();
+
+        };
+
+
+        request.onerror = () => {
+
+            reject(request.error);
+
+        };
+
+    });
+
+}
+
+
+
+// =========================
+// 一覧画面表示
+// =========================
+
+async function renderMycharList(){
+
+    const list =
+    document.getElementById(
+        "mychar-list"
+    );
+
+
+    const addButton =
+    document.getElementById(
+        "add-mychar"
+    );
+
+
+    list.innerHTML = "";
+
+
+    const mychars =
+    await getMychars();
+
+
+    mychars.forEach(mychar => {
+
+        const button =
+        document.createElement(
+            "button"
+        );
+
+
+        button.className =
+        "mychar-button";
+
+
+        button.textContent =
+        "⭐ " + mychar.name;
+
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                openMycharDetail(
+                    mychar.id
+                );
+
+            }
+        );
+
+
+        list.appendChild(button);
+
+    });
+
+
+    // 4人未満なら新規追加表示
+
+    if(
+        mychars.length <
+        MAX_MYCHAR
+    ){
+
+        addButton.style.display =
+        "block";
+
+    }else{
+
+        addButton.style.display =
+        "none";
+
+    }
+
+}
+
+
+
+// =========================
+// 一覧画面を開く
+// =========================
+
+async function showMycharList(){
+
+    document.getElementById(
+        "save-code-list-screen"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "save-code-form-screen"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "save-code-detail-screen"
+    ).style.display = "none";
+
+
+    await renderMycharList();
+
+}
+
+
+
+// =========================
+// 新規登録画面
+// =========================
+
+function openNewMychar(){
+
+    editingMycharId = null;
+
+    selectedQRFile = null;
+
+
+    document.getElementById(
+        "save-form-title"
+    ).textContent =
+    "🎮 マイキャラを追加";
+
+
+    document.getElementById(
+        "mychar-name"
+    ).value = "";
+
+
+    document.getElementById(
+        "mychar-save-id"
+    ).value = "";
+
+
+    document.getElementById(
+        "mychar-qr-file"
+    ).value = "";
+
+
+    const preview =
+    document.getElementById(
+        "qr-preview"
+    );
+
+
+    preview.src = "";
+
+    preview.classList.remove(
+        "show"
+    );
+
+
+    document.getElementById(
+        "save-code-list-screen"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "save-code-form-screen"
+    ).style.display = "block";
+
+
+    document.getElementById(
+        "save-code-detail-screen"
+    ).style.display = "none";
+
+}
+
+
+
+// =========================
+// QRプレビュー
+// =========================
+
+document
+.getElementById(
+    "mychar-qr-file"
+)
+.addEventListener(
+    "change",
+    e => {
+
+        const file =
+        e.target.files[0];
+
+
+        if(!file) return;
+
+
+        selectedQRFile = file;
+
+
+        const reader =
+        new FileReader();
+
+
+        reader.onload = () => {
+
+            const preview =
+            document.getElementById(
+                "qr-preview"
+            );
+
+
+            preview.src =
+            reader.result;
+
+
+            preview.classList.add(
+                "show"
+            );
+
+        };
+
+
+        reader.readAsDataURL(file);
+
+    }
+);
+
+
+
+// =========================
+// 登録・更新
+// =========================
+
+document
+.getElementById(
+    "save-mychar"
+)
+.addEventListener(
+    "click",
+    async () => {
+
+        const name =
+        document
+        .getElementById(
+            "mychar-name"
+        )
+        .value
+        .trim();
+
+
+        const saveId =
+        document
+        .getElementById(
+            "mychar-save-id"
+        )
+        .value
+        .trim();
+
+
+        // 名前チェック
+
+        if(!name){
+
+            alert(
+                "マイキャラ名を入力してください"
+            );
+
+            return;
+
+        }
+
+
+        // 15桁チェック
+
+        if(
+            !/^\d{15}$/.test(
+                saveId
+            )
+        ){
+
+            alert(
+                "セーブコードIDは15桁の数字を入力してください"
+            );
+
+            return;
+
+        }
+
+
+        let existingData = null;
+
+
+        // 編集の場合
+
+        if(editingMycharId){
+
+            existingData =
+            await getMychar(
+                editingMycharId
+            );
+
+        }
+
+
+        // QR画像チェック
+
+        if(
+            !selectedQRFile &&
+            !existingData
+        ){
+
+            alert(
+                "QRコード画像を選択してください"
+            );
+
+            return;
+
+        }
+
+
+        // 新規追加数チェック
+
+        if(!editingMycharId){
+
+            const mychars =
+            await getMychars();
+
+
+            if(
+                mychars.length >=
+                MAX_MYCHAR
+            ){
+
+                alert(
+                    "マイキャラは最大4人まで登録できます"
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        const data = {
+
+            id:
+            editingMycharId ||
+            Date.now().toString(),
+
+
+            name:name,
+
+
+            saveId:saveId,
+
+
+            qrImage:
+            selectedQRFile ||
+            existingData.qrImage,
+
+
+            createdAt:
+            existingData ?
+            existingData.createdAt :
+            Date.now()
+
+        };
+
+
+        await putMychar(data);
+
+
+        selectedQRFile = null;
+
+
+        alert(
+            editingMycharId ?
+            "更新しました" :
+            "登録しました"
+        );
+
+
+        showMycharList();
+
+    }
+);
+
+
+
+// =========================
+// 詳細画面
+// =========================
+
+async function openMycharDetail(id){
+
+    selectedMycharId = id;
+
+
+    const mychar =
+    await getMychar(id);
+
+
+    if(!mychar) return;
+
+
+    document.getElementById(
+        "detail-mychar-name"
+    ).textContent =
+    mychar.name;
+
+
+    document.getElementById(
+        "detail-save-id"
+    ).textContent =
+    mychar.saveId;
+
+
+    const image =
+    document.getElementById(
+        "detail-qr-image"
+    );
+
+
+    // 古いURLを解放
+
+    if(currentPreviewURL){
+
+        URL.revokeObjectURL(
+            currentPreviewURL
+        );
+
+    }
+
+
+    currentPreviewURL =
+    URL.createObjectURL(
+        mychar.qrImage
+    );
+
+
+    image.src =
+    currentPreviewURL;
+
+
+    document.getElementById(
+        "save-code-list-screen"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "save-code-form-screen"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "save-code-detail-screen"
+    ).style.display = "block";
+
+}
+
+
+
+// =========================
+// 編集
+// =========================
+
+document
+.getElementById(
+    "edit-mychar"
+)
+.addEventListener(
+    "click",
+    async () => {
+
+        if(!selectedMycharId) return;
+
+
+        const mychar =
+        await getMychar(
+            selectedMycharId
+        );
+
+
+        if(!mychar) return;
+
+
+        editingMycharId =
+        mychar.id;
+
+
+        selectedQRFile = null;
+
+
+        document.getElementById(
+            "save-form-title"
+        ).textContent =
+        "✏️ マイキャラを編集";
+
+
+        document.getElementById(
+            "mychar-name"
+        ).value =
+        mychar.name;
+
+
+        document.getElementById(
+            "mychar-save-id"
+        ).value =
+        mychar.saveId;
+
+
+        document.getElementById(
+            "mychar-qr-file"
+        ).value = "";
+
+
+        const preview =
+        document.getElementById(
+            "qr-preview"
+        );
+
+
+        if(currentPreviewURL){
+
+            preview.src =
+            currentPreviewURL;
+
+            preview.classList.add(
+                "show"
+            );
+
+        }
+
+
+        document.getElementById(
+            "save-code-list-screen"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "save-code-detail-screen"
+        ).style.display = "none";
+
+
+        document.getElementById(
+            "save-code-form-screen"
+        ).style.display = "block";
+
+    }
+);
+
+
+
+// =========================
+// 削除
+// =========================
+
+document
+.getElementById(
+    "delete-mychar"
+)
+.addEventListener(
+    "click",
+    async () => {
+
+        if(!selectedMycharId) return;
+
+
+        const result =
+        confirm(
+            "このマイキャラを削除しますか？"
+        );
+
+
+        if(!result) return;
+
+
+        await removeMychar(
+            selectedMycharId
+        );
+
+
+        selectedMycharId = null;
+
+
+        alert(
+            "削除しました"
+        );
+
+
+        showMycharList();
+
+    }
+);
+
+
+
+// =========================
+// セーブコード画面を開く
+// =========================
+
+document
+.getElementById(
+    "open-save-code"
+)
+.addEventListener(
+    "click",
+    async () => {
+
+        document
+        .getElementById(
+            "save-code-page"
+        )
+        .classList.add(
+            "active"
+        );
+
+
+        await showMycharList();
+
+    }
+);
+
+
+
+// =========================
+// セーブコード画面を閉じる
+// =========================
+
+document
+.getElementById(
+    "close-save-code"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        document
+        .getElementById(
+            "save-code-page"
+        )
+        .classList.remove(
+            "active"
+        );
+
+    }
+);
+
+
+
+// =========================
+// 新規追加
+// =========================
+
+document
+.getElementById(
+    "add-mychar"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        openNewMychar();
+
+    }
+);
+
+
+
+// =========================
+// 一覧へ戻る
+// =========================
+
+document
+.getElementById(
+    "back-to-mychar-list"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        showMycharList();
+
+    }
+);
+
+
+document
+.getElementById(
+    "back-from-detail"
+)
+.addEventListener(
+    "click",
+    () => {
+
+        showMycharList();
+
+    }
+);
+
+
+
+// =========================
+// データベース起動
+// =========================
+
+openSaveCodeDB();
 
 
 // =====================
