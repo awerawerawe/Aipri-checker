@@ -1203,9 +1203,7 @@ placeholder="カードNo・カード名">
                <input
 type="text"
 id="mychar-save-id"
-inputmode="numeric"
-maxlength="16"
-placeholder="例：12345678-1234567">
+placeholder="セーブコードIDを入力（任意）">
 
 
                 <label>
@@ -3323,21 +3321,7 @@ document
         }
 
 
-        // 15桁チェック
-
-        if(
-    !/^\d{8}-\d{7}$/.test(
-        saveId
-    )
-){
-
-            alert(
-                "セーブコードIDは15桁の数字を入力してください"
-            );
-
-            return;
-
-        }
+        
 
 
         let existingData = null;
