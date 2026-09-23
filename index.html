@@ -3687,6 +3687,17 @@ document
     "click",
     () => {
 
+        // 縦向き固定を解除
+        if(
+            screen.orientation &&
+            screen.orientation.unlock
+        ){
+
+            screen.orientation.unlock();
+
+        }
+
+
         document
         .getElementById(
             "save-code-page"
